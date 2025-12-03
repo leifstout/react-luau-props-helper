@@ -1,0 +1,106 @@
+{
+  "name": "react-luau-props-helper",
+  "displayName": "react-luau-props-helper",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.106.1"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:lua",
+    "onLanguage:luau"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      { "id": "lua", "aliases": ["Lua"], "extensions": [".lua"] },
+      { "id": "luau", "aliases": ["Luau"], "extensions": [".luau"] }
+    ],
+
+    "configuration": {
+  "title": "React Luau Props Helper",
+  "properties": {
+    "reactLuauPropsHelper.props": {
+      "type": "object",
+      "default": {
+        "TextLabel": [
+          "Text",
+          "TextColor3",
+          "TextTransparency",
+          "TextStrokeColor3",
+          "TextStrokeTransparency",
+          "Font",
+          "TextSize",
+          "RichText",
+          "TextWrapped",
+          "TextXAlignment",
+          "TextYAlignment",
+          "BackgroundColor3",
+          "BackgroundTransparency",
+          "BorderSizePixel",
+          "BorderColor3",
+          "Size",
+          "Position",
+          "AnchorPoint",
+          "Visible",
+          "ZIndex",
+          "LayoutOrder"
+        ],
+        "Frame": [
+          "BackgroundColor3",
+          "BackgroundTransparency",
+          "BorderSizePixel",
+          "BorderColor3",
+          "Size",
+          "Position",
+          "AnchorPoint",
+          "Visible",
+          "ZIndex",
+          "LayoutOrder",
+          "AutomaticSize"
+        ],
+        "ImageLabel": [
+          "Image",
+          "ImageColor3",
+          "ImageTransparency",
+          "ScaleType",
+          "SliceCenter",
+          "BackgroundColor3",
+          "BackgroundTransparency",
+          "BorderSizePixel",
+          "BorderColor3",
+          "Size",
+          "Position",
+          "AnchorPoint",
+          "Visible",
+          "ZIndex",
+          "LayoutOrder"
+        ]
+      },
+      "description": "Map from Roblox class name to a list of prop names to suggest. Example: { \"TextLabel\": [\"Text\", \"TextColor3\"], \"Frame\": [\"Size\", \"Position\"] }"
+    }
+  }
+}
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.106.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.46.3",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
