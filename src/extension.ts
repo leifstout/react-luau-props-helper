@@ -1,75 +1,74 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 // Built-in defaults; these match the package.json default.
 // They are used if the user has no config, or if a class isn't in the config.
 const defaultPropsMap: Record<string, string[]> = {
   TextLabel: [
-    'Text',
-    'TextColor3',
-    'TextTransparency',
-    'TextStrokeColor3',
-    'TextStrokeTransparency',
-    'Font',
-    'TextSize',
-    'RichText',
-    'TextWrapped',
-    'TextXAlignment',
-    'TextYAlignment',
-    'BackgroundColor3',
-    'BackgroundTransparency',
-    'BorderSizePixel',
-    'BorderColor3',
-    'Size',
-    'Position',
-    'AnchorPoint',
-    'Visible',
-    'ZIndex',
-    'LayoutOrder',
+    "Text",
+    "TextColor3",
+    "TextTransparency",
+    "TextStrokeColor3",
+    "TextStrokeTransparency",
+    "Font",
+    "TextSize",
+    "RichText",
+    "TextWrapped",
+    "TextXAlignment",
+    "TextYAlignment",
+    "BackgroundColor3",
+    "BackgroundTransparency",
+    "BorderSizePixel",
+    "BorderColor3",
+    "Size",
+    "Position",
+    "AnchorPoint",
+    "Visible",
+    "ZIndex",
+    "LayoutOrder",
   ],
   Frame: [
-    'BackgroundColor3',
-    'BackgroundTransparency',
-    'BorderSizePixel',
-    'BorderColor3',
-    'Size',
-    'Position',
-    'AnchorPoint',
-    'Visible',
-    'ZIndex',
-    'LayoutOrder',
-    'AutomaticSize',
+    "BackgroundColor3",
+    "BackgroundTransparency",
+    "BorderSizePixel",
+    "BorderColor3",
+    "Size",
+    "Position",
+    "AnchorPoint",
+    "Visible",
+    "ZIndex",
+    "LayoutOrder",
+    "AutomaticSize",
   ],
   ImageLabel: [
-    'Image',
-    'ImageColor3',
-    'ImageTransparency',
-    'ScaleType',
-    'SliceCenter',
-    'BackgroundColor3',
-    'BackgroundTransparency',
-    'BorderSizePixel',
-    'BorderColor3',
-    'Size',
-    'Position',
-    'AnchorPoint',
-    'Visible',
-    'ZIndex',
-    'LayoutOrder',
+    "Image",
+    "ImageColor3",
+    "ImageTransparency",
+    "ScaleType",
+    "SliceCenter",
+    "BackgroundColor3",
+    "BackgroundTransparency",
+    "BorderSizePixel",
+    "BorderColor3",
+    "Size",
+    "Position",
+    "AnchorPoint",
+    "Visible",
+    "ZIndex",
+    "LayoutOrder",
   ],
 };
 
 export function activate(context: vscode.ExtensionContext) {
   const selector: vscode.DocumentSelector = [
-    { language: 'lua', scheme: 'file' },
-    { language: 'luau', scheme: 'file' },
+    { language: "lua", scheme: "file" },
+    { language: "luau", scheme: "file" },
   ];
 
   const provider = vscode.languages.registerCompletionItemProvider(
     selector,
     new ReactLuauPropsCompletionProvider(),
-    ' ',
-    ',',
-    '\n'
+    " ",
+    "\n"
   );
 
   context.subscriptions.push(provider);
@@ -77,7 +76,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-class ReactLuauPropsCompletionProvider implements vscode.CompletionItemProvider {
+class ReactLuauPropsCompletionProvider
+  implements vscode.CompletionItemProvider
+{
   provideCompletionItems(
     document: vscode.TextDocument,
     position: vscode.Position
@@ -121,14 +122,18 @@ class ReactLuauPropsCompletionProvider implements vscode.CompletionItemProvider 
    */
   private getEnclosingClassName(text: string): string | undefined {
     const pattern =
-      /(React\.createElement|e)\s*\(\s*["']([A-Za-z0-9_]+)["']\s*,\s*{/g;
+      /(React\.createElement|e)\s*\(\s*(?:(["'])([A-Za-z0-9_]+)\2|([A-Za-z0-9_]+))\s*,\s*{/g;
 
     let match: RegExpExecArray | null;
     let lastClassName: string | undefined = undefined;
 
     while ((match = pattern.exec(text)) !== null) {
-      const className = match[2]; // group 2 = "ClassName"
-      lastClassName = className;
+      const fromString = match[3]; // "TextLabel"
+      const fromIdent = match[4]; // TextLabel
+      const className = fromString || fromIdent;
+      if (className) {
+        lastClassName = className;
+      }
     }
 
     return lastClassName;
@@ -145,16 +150,19 @@ class ReactLuauPropsCompletionProvider implements vscode.CompletionItemProvider 
    */
   private isInsidePropsObject(text: string, className: string): boolean {
     const pattern =
-      /(React\.createElement|e)\s*\(\s*["']([A-Za-z0-9_]+)["']\s*,\s*{/g;
+      /(React\.createElement|e)\s*\(\s*(?:(["'])([A-Za-z0-9_]+)\2|([A-Za-z0-9_]+))\s*,\s*{/g;
 
     let match: RegExpExecArray | null;
     let propsStartIndex = -1;
 
     while ((match = pattern.exec(text)) !== null) {
-      const matchedClassName = match[2];
+      const fromString = match[3];
+      const fromIdent = match[4];
+      const matchedClassName = fromString || fromIdent;
+
       if (matchedClassName !== className) continue;
 
-      const braceIndexInMatch = match[0].lastIndexOf('{');
+      const braceIndexInMatch = match[0].lastIndexOf("{");
       propsStartIndex = match.index + braceIndexInMatch;
     }
 
@@ -168,9 +176,9 @@ class ReactLuauPropsCompletionProvider implements vscode.CompletionItemProvider 
     for (let i = propsStartIndex; i < text.length; i++) {
       const ch = text[i];
 
-      if (ch === '{') {
+      if (ch === "{") {
         depth++;
-      } else if (ch === '}') {
+      } else if (ch === "}") {
         depth--;
         if (depth === 0 && i > propsStartIndex) {
           ended = true;
@@ -189,10 +197,10 @@ class ReactLuauPropsCompletionProvider implements vscode.CompletionItemProvider 
    *   2) built-in defaults otherwise
    */
   private getPropsForClass(className: string): string[] | undefined {
-    const config = vscode.workspace.getConfiguration('reactLuauPropsHelper');
+    const config = vscode.workspace.getConfiguration("reactLuauPropsHelper");
 
     const userMap =
-      config.get<Record<string, string[]>>('props', defaultPropsMap) ||
+      config.get<Record<string, string[]>>("props", defaultPropsMap) ||
       defaultPropsMap;
 
     return userMap[className] || defaultPropsMap[className];
