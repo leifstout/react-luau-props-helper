@@ -1,8 +1,9 @@
 {
   "name": "react-luau-props-helper",
-  "displayName": "react-luau-props-helper",
-  "description": "",
-  "version": "0.0.3",
+  "displayName": "React Luau Props Helper",
+  "description": "Customizable prop autocomplete for React-Luau createElement calls.",
+  "version": "1.0.0",
+  "publisher": "leifstout",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,6 +14,12 @@
   },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "roblox",
+    "luau",
+    "react",
+    "ui"
   ],
   "activationEvents": [
     "onLanguage:lua",
